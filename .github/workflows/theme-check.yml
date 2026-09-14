@@ -1,0 +1,49 @@
+name: Blogger Theme Check
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+
+jobs:
+  validate-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Detect Blogger baseline
+        id: baseline
+        shell: bash
+        run: |
+          if [ -f src/template/base.xml ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Baseline XML has not been imported yet; skipping build."
+          fi
+
+      - name: Validate and build
+        if: steps.baseline.outputs.ready == 'true'
+        run: npm run check
+
+      - name: Upload built Blogger XML
+        if: steps.baseline.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: hocvienads-blogger-theme
+          path: dist/hocvienads.xml
+          if-no-files-found: error

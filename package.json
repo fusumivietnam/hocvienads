@@ -1,0 +1,11 @@
+{
+  "name": "hocvienads-blogger-theme",
+  "private": true,
+  "version": "3.0.0-dev",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-theme.mjs",
+    "validate": "node scripts/validate-theme.mjs",
+    "check": "npm run validate && npm run build"
+  }
+}
