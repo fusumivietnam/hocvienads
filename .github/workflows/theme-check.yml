@@ -25,10 +25,23 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Detect Blogger baseline
+        id: baseline
+        shell: bash
+        run: |
+          if [ -f src/template/base.xml ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Baseline XML has not been imported yet; skipping build."
+          fi
+
       - name: Validate and build
+        if: steps.baseline.outputs.ready == 'true'
         run: npm run check
 
       - name: Upload built Blogger XML
+        if: steps.baseline.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: hocvienads-blogger-theme
