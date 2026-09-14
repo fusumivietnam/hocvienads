@@ -1,0 +1,65 @@
+/* HVA v3 header/navigation
+ * Consolidates interaction rules without changing Blogger markup.
+ */
+.nav-main {
+  align-items: center;
+  gap: clamp(10px, 1vw, 16px);
+}
+
+.nav-main > li > a,
+.sidenav > a,
+.sidenav > button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sidenav {
+  position: relative;
+}
+
+.sidenav:hover .dropdown,
+.sidenav:focus-within .dropdown {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.dropdown {
+  max-width: min(320px, calc(100vw - 24px));
+}
+
+.dropdown a {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+@media (hover: none) {
+  .sidenav:hover .dropdown {
+    visibility: inherit;
+    opacity: inherit;
+    transform: inherit;
+  }
+
+  .sidenav:focus-within .dropdown {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-main {
+    gap: 8px;
+  }
+
+  .nav-main > li > a,
+  .sidenav > a,
+  .sidenav > button,
+  .dropdown a {
+    min-height: 44px;
+  }
+}
