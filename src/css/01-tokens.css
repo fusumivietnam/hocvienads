@@ -27,6 +27,14 @@
   --hva-layout-bg-ad-top: $(hva.bg.ad.top);
   --hva-radius: $(hva.radius);
 
+  /* Guardrails for legacy Customizer values. These preserve user settings
+   * while preventing old wide defaults from degrading readability. */
+  --hva-layout-article-shell-effective: min(var(--hva-layout-article-shell), 1120px);
+  --hva-layout-reading-effective: min(var(--hva-layout-reading), 780px);
+  --hva-layout-media-effective: min(var(--hva-layout-media), 900px);
+  --hva-layout-author-rail-effective: min(var(--hva-layout-author-rail), 120px);
+  --hva-layout-bg-ad-effective: min(var(--hva-layout-bg-ad), 200px);
+
   /* Compatibility aliases. Remove only after legacy selectors are migrated. */
   --lime: var(--hva-color-accent);
   --dark: var(--hva-color-bg);
