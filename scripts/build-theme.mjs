@@ -61,7 +61,7 @@ output = replaceRequired(output, labelCountDocumentWrite, labelCountLoader, 'lab
 const outputChecks = {
   conditionalOgType: output.includes("<meta content='article' property='og:type'/>") && output.includes("<meta content='website' property='og:type'/>") ,
   socialImage: output.includes("property='og:image'") && output.includes("name='twitter:image'"),
-  relatedImageLoading: output.includes('loading=\\"lazy\\" decoding=\\"async\\"'),
+  relatedImageLoading: output.includes('loading="lazy" decoding="async"'),
   paginationWithoutDocumentWrite: !output.includes(homeCountDocumentWrite) && !output.includes(labelCountDocumentWrite)
 };
 
