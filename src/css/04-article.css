@@ -1,0 +1,64 @@
+/* HVA v3 article layout
+ * Uses semantic layout guardrails while preserving existing HVA classes.
+ */
+html.hva-responsive-article-flow body.hva-post-page h1.fs-1d3,
+html.hva-responsive-article-flow body.hva-post-page .breadcrumb-nav,
+html.hva-responsive-article-flow body.hva-post-page .flex.jcsb.mb-7,
+html.hva-responsive-article-flow body.hva-post-page article.row-x,
+html.hva-responsive-article-flow body.hva-post-page #comments,
+html.hva-responsive-article-flow body.hva-post-page .related-posts.hva-related-after-comments,
+html.hva-responsive-article-flow body.hva-post-page .post-feeds,
+html.hva-responsive-article-flow body.hva-post-page .blog-feeds {
+  width: min(100%, var(--hva-layout-article-shell-effective)) !important;
+  max-width: var(--hva-layout-article-shell-effective) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html.hva-post-clean.hva-show-post-author-rail body.hva-post-page article.row-x {
+  grid-template-columns: var(--hva-layout-author-rail-effective) minmax(0, 1fr) !important;
+}
+
+html.hva-responsive-article-flow body.hva-post-page .post-body :where(p, ul, ol, blockquote, table, pre, .notice-card, .cta-box),
+html.hva-responsive-article-flow body.hva-post-page .post-body > :where(div, section):not(.toc-box):not(.separator):not(.cta-box):not(.notice-card):not(.related-posts),
+html.hva-responsive-article-flow body.hva-post-page .post-body :where(h2, h3, h4),
+html.hva-responsive-article-flow body.hva-post-page .toc-box {
+  width: min(100%, var(--hva-layout-reading-effective)) !important;
+  max-width: var(--hva-layout-reading-effective) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html.hva-responsive-article-flow body.hva-post-page .post-body .separator,
+html.hva-responsive-article-flow body.hva-post-page .post-body > figure,
+html.hva-responsive-article-flow body.hva-post-page .post-body > .tr-caption-container,
+html.hva-responsive-article-flow body.hva-post-page .post-body .hva-media-balanced {
+  width: min(100%, var(--hva-layout-media-effective)) !important;
+  max-width: var(--hva-layout-media-effective) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+html.hva-post-clean.hva-show-post-author-rail body.hva-post-page .g-profile img,
+html.hva-post-clean.hva-show-post-author-rail body.hva-post-page .h-73,
+html.hva-post-clean.hva-show-post-author-rail body.hva-post-page .w-73 {
+  width: 58px !important;
+  height: 58px !important;
+}
+
+@media (max-width: 900px) {
+  html.hva-post-clean.hva-show-post-author-rail body.hva-post-page article.row-x {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html.hva-responsive-article-flow body.hva-post-page main.max-w {
+    width: min(calc(100% - 16px), var(--hva-layout-canvas)) !important;
+  }
+
+  html.hva-post-clean.hva-show-post-author-rail body.hva-post-page .post-body {
+    font-size: 1rem !important;
+    line-height: 1.76 !important;
+  }
+}
