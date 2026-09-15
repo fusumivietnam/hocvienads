@@ -4,6 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 const source = resolve('src/template/base.xml');
 const cssDir = resolve('src/css');
 const relatedPostsSource = resolve('src/js/related-posts.js');
+const paginationSource = resolve('src/js/pagination.js');
 const target = resolve('dist/hocvienads.xml');
 
 const xml = await readFile(source, 'utf8').catch(() => {
@@ -70,20 +71,21 @@ const legacyRelatedEnd = '/*]]>*/</script>';
 const relatedRuntime = `<script>/*<![CDATA[*/\n${relatedPostsJs.trim()}\n/*]]>*/</script>`;
 output = replaceBlockRequired(output, legacyRelatedStart, legacyRelatedEnd, relatedRuntime, 'related posts runtime');
 
-const homeCountDocumentWrite = `document.write('<script src=\"'+home_page+'feeds/posts/summary?max-results=1&alt=json-in-script&callback=totalcountdata\"><\\/script>')`;
-const homeCountLoader = `(function(){var s=document.createElement(\"script\");s.src=home_page+\"feeds/posts/summary?max-results=1&alt=json-in-script&callback=totalcountdata\";document.head.appendChild(s)})()`;
-output = replaceRequired(output, homeCountDocumentWrite, homeCountLoader, 'home pagination JSONP loader');
-
-const labelCountDocumentWrite = `document.write('<script src=\"'+home_page+\"feeds/posts/summary/-/\"+postLabel+'?alt=json-in-script&callback=totalcountdata&max-results=1\" ><\\/script>')`;
-const labelCountLoader = `(function(){var s=document.createElement(\"script\");s.src=home_page+\"feeds/posts/summary/-/\"+postLabel+\"?alt=json-in-script&callback=totalcountdata&max-results=1\";document.head.appendChild(s)})()`;
-output = replaceRequired(output, labelCountDocumentWrite, labelCountLoader, 'label pagination JSONP loader');
+const paginationJs = await readFile(paginationSource, 'utf8').catch(() => {
+  console.error('Missing src/js/pagination.js');
+  process.exit(1);
+});
+const paginationStart = "<b:includable id='postPagination-numeric'>";
+const paginationEnd = '</b:includable>';
+const paginationRuntime = `<b:includable id='postPagination-numeric'>\n<script>/*<![CDATA[*/\n${paginationJs.trim()}\n/*]]>*/</script>\n</b:includable>`;
+output = replaceBlockRequired(output, paginationStart, paginationEnd, paginationRuntime, 'pagination runtime');
 
 const outputChecks = {
   conditionalOgType: output.includes("<meta content='article' property='og:type'/>") && output.includes("<meta content='website' property='og:type'/>") ,
   socialImage: output.includes("property='og:image'") && output.includes("name='twitter:image'"),
   siteStructuredData: output.includes('&quot;@type&quot;: &quot;WebSite&quot;') && output.includes('&quot;@type&quot;: &quot;Organization&quot;') && output.includes("cond='data:view.isHomepage'"),
   relatedPostsModule: output.includes('window.hvaRelatedPostIndex') && output.includes("image.loading = 'lazy'") && !output.includes('randomRelatedIndex,showRelatedPost'),
-  paginationWithoutDocumentWrite: !output.includes(homeCountDocumentWrite) && !output.includes(labelCountDocumentWrite)
+  paginationModule: output.includes("data-hva-page") && output.includes("hvaPagination_") && !output.includes('function redirectpage') && !output.includes('onclick="redirectpage') && !output.includes('document.write(')
 };
 
 if (Object.values(outputChecks).some((value) => !value)) {
