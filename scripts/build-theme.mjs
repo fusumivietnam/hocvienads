@@ -85,7 +85,7 @@ const outputChecks = {
   socialImage: output.includes("property='og:image'") && output.includes("name='twitter:image'"),
   siteStructuredData: output.includes('&quot;@type&quot;: &quot;WebSite&quot;') && output.includes('&quot;@type&quot;: &quot;Organization&quot;') && output.includes("cond='data:view.isHomepage'"),
   relatedPostsModule: output.includes('window.hvaRelatedPostIndex') && output.includes("image.loading = 'lazy'") && !output.includes('randomRelatedIndex,showRelatedPost'),
-  paginationModule: output.includes("data-hva-page") && output.includes("hvaPagination_") && !output.includes('function redirectpage') && !output.includes('onclick="redirectpage') && !output.includes('document.write(')
+  paginationModule: output.includes("data-hva-page") && output.includes("hvaPagination_") && !output.includes('function redirectpage') && !output.includes('function redirectlabel') && !output.includes('function finddatepost') && !output.includes('callback=totalcountdata')
 };
 
 if (Object.values(outputChecks).some((value) => !value)) {
