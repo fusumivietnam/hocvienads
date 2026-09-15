@@ -42,6 +42,10 @@ const staticOgType = "<meta content='website' property='og:type'/>";
 const socialMeta = `<b:if cond='data:view.isPost'>\n<meta content='article' property='og:type'/>\n<b:else/>\n<meta content='website' property='og:type'/>\n</b:if>\n<b:if cond='data:blog.postImageUrl'>\n<meta expr:content='data:blog.postImageUrl' property='og:image'/>\n<meta expr:content='data:blog.postImageUrl' name='twitter:image'/>\n</b:if>`;
 output = replaceRequired(output, staticOgType, socialMeta, 'social metadata anchor');
 
+const analyticsInclude = "<b:include data='blog' name='google-analytics'/>";
+const siteStructuredData = `<b:if cond='data:view.isHomepage'>\n<b:tag name='script' type='application/ld+json'>\n{\n  &quot;@context&quot;: &quot;https://schema.org&quot;,\n  &quot;@graph&quot;: [\n    {\n      &quot;@type&quot;: &quot;Organization&quot;,\n      &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;,\n      &quot;name&quot;: &quot;<data:blog.title.jsonEscaped/>&quot;,\n      &quot;url&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>&quot;\n    },\n    {\n      &quot;@type&quot;: &quot;WebSite&quot;,\n      &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#website&quot;,\n      &quot;url&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>&quot;,\n      &quot;name&quot;: &quot;<data:blog.title.jsonEscaped/>&quot;,\n      &quot;publisher&quot;: { &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot; }\n    }\n  ]\n}\n</b:tag>\n</b:if>\n\n${analyticsInclude}`;
+output = replaceRequired(output, analyticsInclude, siteStructuredData, 'site structured data anchor');
+
 const relatedImage = `class=\"post-thumb lazy\" alt=\"'+w+'\" src=\"'+r+'\"`;
 const optimizedRelatedImage = `class=\"post-thumb lazy\" alt=\"'+w+'\" loading=\"lazy\" decoding=\"async\" src=\"'+r+'\"`;
 if (!output.includes(relatedImage)) {
@@ -61,6 +65,7 @@ output = replaceRequired(output, labelCountDocumentWrite, labelCountLoader, 'lab
 const outputChecks = {
   conditionalOgType: output.includes("<meta content='article' property='og:type'/>") && output.includes("<meta content='website' property='og:type'/>") ,
   socialImage: output.includes("property='og:image'") && output.includes("name='twitter:image'"),
+  siteStructuredData: output.includes('&quot;@type&quot;: &quot;WebSite&quot;') && output.includes('&quot;@type&quot;: &quot;Organization&quot;') && output.includes("cond='data:view.isHomepage'"),
   relatedImageLoading: output.includes('loading="lazy" decoding="async"'),
   paginationWithoutDocumentWrite: !output.includes(homeCountDocumentWrite) && !output.includes(labelCountDocumentWrite)
 };
