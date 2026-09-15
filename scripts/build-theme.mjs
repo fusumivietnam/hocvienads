@@ -3,6 +3,7 @@ import { dirname, join, resolve } from 'node:path';
 
 const source = resolve('src/template/base.xml');
 const cssDir = resolve('src/css');
+const relatedPostsSource = resolve('src/js/related-posts.js');
 const target = resolve('dist/hocvienads.xml');
 
 const xml = await readFile(source, 'utf8').catch(() => {
@@ -21,6 +22,20 @@ const replaceRequired = (input, search, replacement, label) => {
     process.exit(1);
   }
   return input.replace(search, replacement);
+};
+
+const replaceBlockRequired = (input, start, end, replacement, label) => {
+  const startIndex = input.indexOf(start);
+  if (startIndex < 0) {
+    console.error(`Build transform failed: ${label} start anchor`);
+    process.exit(1);
+  }
+  const endIndex = input.indexOf(end, startIndex);
+  if (endIndex < 0) {
+    console.error(`Build transform failed: ${label} end anchor`);
+    process.exit(1);
+  }
+  return input.slice(0, startIndex) + replacement + input.slice(endIndex + end.length);
 };
 
 const cssFiles = await readdir(cssDir).catch(() => []);
@@ -46,13 +61,14 @@ const analyticsInclude = "<b:include data='blog' name='google-analytics'/>";
 const siteStructuredData = `<b:if cond='data:view.isHomepage'>\n<b:tag name='script' type='application/ld+json'>\n{\n  &quot;@context&quot;: &quot;https://schema.org&quot;,\n  &quot;@graph&quot;: [\n    {\n      &quot;@type&quot;: &quot;Organization&quot;,\n      &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot;,\n      &quot;name&quot;: &quot;<data:blog.title.jsonEscaped/>&quot;,\n      &quot;url&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>&quot;\n    },\n    {\n      &quot;@type&quot;: &quot;WebSite&quot;,\n      &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#website&quot;,\n      &quot;url&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>&quot;,\n      &quot;name&quot;: &quot;<data:blog.title.jsonEscaped/>&quot;,\n      &quot;publisher&quot;: { &quot;@id&quot;: &quot;<data:blog.homepageUrl.jsonEscaped/>#organization&quot; }\n    }\n  ]\n}\n</b:tag>\n</b:if>\n\n${analyticsInclude}`;
 output = replaceRequired(output, analyticsInclude, siteStructuredData, 'site structured data anchor');
 
-const relatedImage = `class=\"post-thumb lazy\" alt=\"'+w+'\" src=\"'+r+'\"`;
-const optimizedRelatedImage = `class=\"post-thumb lazy\" alt=\"'+w+'\" loading=\"lazy\" decoding=\"async\" src=\"'+r+'\"`;
-if (!output.includes(relatedImage)) {
-  console.error('Build transform failed: related-post image anchor');
+const relatedPostsJs = await readFile(relatedPostsSource, 'utf8').catch(() => {
+  console.error('Missing src/js/related-posts.js');
   process.exit(1);
-}
-output = output.split(relatedImage).join(optimizedRelatedImage);
+});
+const legacyRelatedStart = '<script>/*<![CDATA[*/ var randomRelatedIndex,showRelatedPost;';
+const legacyRelatedEnd = '/*]]>*/</script>';
+const relatedRuntime = `<script>/*<![CDATA[*/\n${relatedPostsJs.trim()}\n/*]]>*/</script>`;
+output = replaceBlockRequired(output, legacyRelatedStart, legacyRelatedEnd, relatedRuntime, 'related posts runtime');
 
 const homeCountDocumentWrite = `document.write('<script src=\"'+home_page+'feeds/posts/summary?max-results=1&alt=json-in-script&callback=totalcountdata\"><\\/script>')`;
 const homeCountLoader = `(function(){var s=document.createElement(\"script\");s.src=home_page+\"feeds/posts/summary?max-results=1&alt=json-in-script&callback=totalcountdata\";document.head.appendChild(s)})()`;
@@ -66,7 +82,7 @@ const outputChecks = {
   conditionalOgType: output.includes("<meta content='article' property='og:type'/>") && output.includes("<meta content='website' property='og:type'/>") ,
   socialImage: output.includes("property='og:image'") && output.includes("name='twitter:image'"),
   siteStructuredData: output.includes('&quot;@type&quot;: &quot;WebSite&quot;') && output.includes('&quot;@type&quot;: &quot;Organization&quot;') && output.includes("cond='data:view.isHomepage'"),
-  relatedImageLoading: output.includes('loading="lazy" decoding="async"'),
+  relatedPostsModule: output.includes('window.hvaRelatedPostIndex') && output.includes("image.loading = 'lazy'") && !output.includes('randomRelatedIndex,showRelatedPost'),
   paginationWithoutDocumentWrite: !output.includes(homeCountDocumentWrite) && !output.includes(labelCountDocumentWrite)
 };
 
