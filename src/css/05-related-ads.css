@@ -1,0 +1,35 @@
+/* HVA v3 related posts + wide-screen background ads */
+body.hva-post-page .related.style-2 {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+  gap: 14px !important;
+}
+
+body.hva-post-page .related .item-related {
+  border-color: var(--hva-color-border) !important;
+  background: var(--hva-color-panel) !important;
+}
+
+body.hva-post-page .related .item-related:hover {
+  border-color: var(--hva-color-accent) !important;
+}
+
+body.hva-post-page .related .item-title {
+  color: var(--hva-color-heading) !important;
+}
+
+.hva-bg-ad {
+  width: var(--hva-layout-bg-ad-effective) !important;
+}
+
+@media (max-width: 1679px) {
+  .hva-bg-ad {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body.hva-post-page .related.style-2 {
+    grid-template-columns: 1fr !important;
+  }
+}

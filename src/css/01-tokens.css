@@ -1,0 +1,51 @@
+/* HVA v3 canonical design tokens
+ * Keep Blogger Customizer variables as the source of truth.
+ * Legacy aliases remain available while selectors are migrated incrementally.
+ */
+:root {
+  --hva-color-accent: $(hva.accent.color);
+  --hva-color-bg: $(hva.body.bg.color);
+  --hva-color-surface: $(hva.surface.color);
+  --hva-color-panel: $(hva.panel.color);
+  --hva-color-section: $(hva.section.bg.color);
+  --hva-color-border: $(hva.border.color);
+  --hva-color-heading: $(hva.heading.color);
+  --hva-color-text: $(hva.text.color);
+  --hva-color-text-secondary: $(hva.secondary.text.color);
+  --hva-color-muted: $(hva.muted.color);
+  --hva-color-header-start: $(hva.header.start.color);
+  --hva-color-header-end: $(hva.header.end.color);
+  --hva-color-notice-bg: $(hva.notice.bg.color);
+  --hva-color-notice-border: $(hva.notice.border.color);
+
+  --hva-layout-canvas: $(hva.site.width);
+  --hva-layout-article-shell: $(hva.article.shell.width);
+  --hva-layout-reading: $(hva.article.reading.width);
+  --hva-layout-media: $(hva.article.media.width);
+  --hva-layout-author-rail: $(hva.author.rail.width);
+  --hva-layout-bg-ad: $(hva.bg.ad.width);
+  --hva-layout-bg-ad-top: $(hva.bg.ad.top);
+  --hva-radius: $(hva.radius);
+
+  /* Guardrails for legacy Customizer values. These preserve user settings
+   * while preventing old wide defaults from degrading readability. */
+  --hva-layout-article-shell-effective: min(var(--hva-layout-article-shell), 1120px);
+  --hva-layout-reading-effective: min(var(--hva-layout-reading), 780px);
+  --hva-layout-media-effective: min(var(--hva-layout-media), 900px);
+  --hva-layout-author-rail-effective: min(var(--hva-layout-author-rail), 120px);
+  --hva-layout-bg-ad-effective: min(var(--hva-layout-bg-ad), 200px);
+
+  /* Compatibility aliases. Remove only after legacy selectors are migrated. */
+  --lime: var(--hva-color-accent);
+  --dark: var(--hva-color-bg);
+  --mediumdark: var(--hva-color-surface);
+  --dark34: var(--hva-color-section);
+  --white: var(--hva-color-heading);
+  --surface: var(--hva-color-surface);
+  --surface2: var(--hva-color-panel);
+  --border: var(--hva-color-border);
+  --muted: var(--hva-color-muted);
+  --light: var(--hva-color-text);
+  --mediumlight: var(--hva-color-text-secondary);
+  --radius: var(--hva-radius);
+}
