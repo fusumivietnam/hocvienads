@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   validate-build:
-    name: Validate and verify Blogger theme
+    name: Validate, verify and audit Blogger theme
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -41,7 +41,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate, build and verify integrity
+      - name: Validate, build, verify and audit
         run: npm run check
 
       - name: Upload built Blogger XML
@@ -49,5 +49,15 @@ jobs:
         with:
           name: hocvienads-blogger-theme
           path: dist/hocvienads.xml
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload theme audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: hocvienads-theme-audit
+          path: |
+            reports/theme-audit.json
+            reports/theme-audit.md
           if-no-files-found: error
           retention-days: 7
