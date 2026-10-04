@@ -44,6 +44,17 @@ jobs:
       - name: Validate, build, verify and audit
         run: npm run check
 
+      - name: Publish audit summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f reports/theme-audit.md ]; then
+            cat reports/theme-audit.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "## Blogger Theme Audit" >> "$GITHUB_STEP_SUMMARY"
+            echo "Audit report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Upload built Blogger XML
         uses: actions/upload-artifact@v4
         with:
@@ -53,11 +64,12 @@ jobs:
           retention-days: 7
 
       - name: Upload theme audit report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hocvienads-theme-audit
           path: |
             reports/theme-audit.json
             reports/theme-audit.md
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
